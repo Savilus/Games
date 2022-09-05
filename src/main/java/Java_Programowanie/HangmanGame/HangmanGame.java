@@ -8,6 +8,11 @@ import java.util.Set;
 
 
 public class HangmanGame {
+    private static final String GREEN = "\u001B[32m";
+    private static final String RESET = "\u001B[0m";
+    public static final String RED = "\033[0;31m";
+    public static final String YELLOW_UNDERLINED = "\033[4;33m";
+    public static final String GREEN_BOLD_BRIGHT = "\033[1;92m";
 
     RandomWordForHangman newRandomWordWhenGameStart = new RandomWordForHangman("hangmanGame.txt");
     private int maxErrors;
@@ -65,9 +70,11 @@ public class HangmanGame {
 
     private boolean guessChar(char guess) {
        boolean result = false;
+       int isGuessCharInPassword = 0;
         for (int i = 0; i < secretPasswordTab.length; i++) {
             if (secretPasswordTab[i] == guess) {
                 howManyLettersAreDiscovered[i] = guess;
+                isGuessCharInPassword++;
                 result = true;
             } else if (usedCharacters.contains(guess)) {
                 System.out.println("You already tried letter [" + guess + "]! Try something else.");
@@ -76,6 +83,15 @@ public class HangmanGame {
                 return result;
             }
         }
+        if(isGuessCharInPassword == 0){
+            System.out.println(RED + "Whoops! You missed. You lose one life." + RESET);
+            if((this.maxErrors - 1) == 1){
+                System.out.println("Carefully, is your last live.");
+            } else {
+                System.out.println( "You have [" + GREEN + (this.maxErrors - 1) + RESET + "] lives remaining");
+            }
+        }
+
         usedCharacters.add(guess);
         return result;
     }
@@ -87,13 +103,13 @@ public class HangmanGame {
     private boolean isOver() {
         if (lostAllLives()) {
             System.out.println("Unfortunately you made to many mistakes. You lose!");
-            System.out.println("Your hidden word was: " + secretPasswordToDiscover);
-            System.out.println("You want try again? Y / N");
+            System.out.println("Your hidden word was: " + YELLOW_UNDERLINED + secretPasswordToDiscover + RESET);
+            System.out.println("You want try again? " + GREEN + "Y" + RESET + "/" + RED + "N" + RESET );
             return lostAllLives();
         } else if (guessedSecret()) {
-            System.out.println("Congratulations! You discovered you hidden word! :)");
-            System.out.println("Your hidden word was: " + secretPasswordToDiscover);
-            System.out.println("You want try again? Y / N");
+            System.out.println( GREEN_BOLD_BRIGHT + "Congratulations!" + RESET + "You discovered you hidden word! :)");
+            System.out.println("Your hidden word was: " + YELLOW_UNDERLINED + secretPasswordToDiscover + RESET);
+            System.out.println("You want try again? " + GREEN + "Y" + RESET + "/" + RED + "N" + RESET);
         }
         return guessedSecret();
     }
